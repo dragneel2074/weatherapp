@@ -2,9 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:geolocator/geolocator.dart';
 
-
+import 'location.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -17,11 +16,17 @@ class _HomeState extends State<Home> {
   var currently;
   var humidity;
   var windSpeed;
-  var city = "Kathmandu";
+  var city;
   var api = '8dc72e210cbc35c4a6c468c60e0acc95#';
+  GetLocationData po = GetLocationData();
+  var lat;
+  var lon;
+  
+  
+
 
 Future getWeather()async{
-    var url = Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=$city&units=imperial&appid=$api');
+    var url = Uri.parse('https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$api');
       http.Response response = await http.get(url);
     var results = jsonDecode(response.body);
 
@@ -31,17 +36,21 @@ Future getWeather()async{
       this.currently = results['weather'][0]['main'];
       this.humidity = results['main']['humidity'];
       this.windSpeed =  results['wind']['speed'];
+      this.city = results['name'];
     });
 }
-void getLocation() async{
-Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
-print(position);
-}
-
+  
 @override
 void initState(){
   super.initState();
- this.getWeather();
+ po.getLocation().then((value)=>{
+  // print(value),
+lat = po.lat,
+lon = po.lon,
+print('Red $lat $lon'),
+ this.getWeather(),
+ });
+ 
 }
 
   @override
@@ -137,7 +146,9 @@ void initState(){
                   child: TextButton(
                                       child: Text('Get My Location',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-                  onPressed: (){},
+                  onPressed: (){
+                   GetLocationData();
+                  },
                   ),
                 ),
               ],
