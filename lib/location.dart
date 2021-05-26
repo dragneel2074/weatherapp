@@ -3,14 +3,19 @@ import 'package:geolocator/geolocator.dart';
 
 
 class GetLocationData{
-  var lat, lon;
+  double lat, lon;
 
-  getLocation() async{
+  Future<void> getLocation() async{
+    try{
   Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
    
    lat = position.latitude;
   lon = position.longitude;
-  print(lat);
+ print(lat);
+    }
+    catch(e){
+      print(e);
+    }
 } 
 }
 
